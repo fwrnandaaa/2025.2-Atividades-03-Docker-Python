@@ -72,14 +72,14 @@ Criar uma imagem Docker baseada em Fedora, instalar Python, e executar programas
   RUN dnf install -y python3 && dnf clean all
   ```
 
-- [ ] **3.4** Criar o diretório de trabalho `/app`:
+- [ ] **3.4** Criar o diretório `/app` que será compartilhado:
   ```dockerfile
-  WORKDIR /app
+  RUN mkdir -p /app
   ```
 
-- [ ] **3.5** Copiar os arquivos Python para o container:
+- [ ] **3.5** Definir `/app` como diretório de trabalho:
   ```dockerfile
-  COPY alomundo.py calculadora.py /app/
+  WORKDIR /app
   ```
 
 - [ ] **3.6** (Opcional) Definir um comando padrão:
@@ -99,14 +99,14 @@ Criar uma imagem Docker baseada em Fedora, instalar Python, e executar programas
   docker images | grep python-fedora-app
   ```
 
-- [ ] **4.3** Executar o programa `alomundo.py`:
+- [ ] **4.3** Executar o programa `alomundo.py` com mapeamento de volume:
   ```bash
-  docker run --rm -v $(pwd):/app python-fedora-app python3 /app/alomundo.py
+  docker run --rm -v "$(pwd)":/app python-fedora-app python3 /app/alomundo.py
   ```
 
-- [ ] **4.4** Executar o programa `calculadora.py`:
+- [ ] **4.4** Executar o programa `calculadora.py` com mapeamento de volume:
   ```bash
-  docker run --rm -v $(pwd):/app python-fedora-app python3 /app/calculadora.py
+  docker run --rm -v "$(pwd)":/app python-fedora-app python3 /app/calculadora.py
   ```
 
 - [ ] **4.5** Testar o mapeamento de volume editando um dos arquivos Python e executando novamente
@@ -144,7 +144,11 @@ Um Dockerfile é um arquivo de texto que contém instruções para construir uma
 - **CMD**: Define o comando padrão a ser executado
 
 ### Mapeamento de volumes (-v):
-O parâmetro `-v $(pwd):/app` mapeia o diretório atual da máquina host para o diretório `/app` dentro do container. Isso permite que alterações feitas nos arquivos do host sejam refletidas no container em tempo real.
+O parâmetro `-v "$(pwd)":/app` mapeia o diretório atual da máquina host para o diretório `/app` dentro do container. Isso permite que:
+- Os arquivos Python permaneçam no host (não são copiados para a imagem)
+- Alterações feitas nos arquivos do host sejam refletidas no container em tempo real
+- Você possa editar o código sem precisar reconstruir a imagem Docker
+- O mesmo container possa executar diferentes versões dos arquivos
 
 ### Parâmetro --rm:
 Remove automaticamente o container após sua execução, mantendo o sistema limpo.
