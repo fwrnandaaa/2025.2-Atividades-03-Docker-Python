@@ -58,6 +58,8 @@ Criar uma imagem Docker baseada em Fedora, instalar Python, e executar programas
   print(f"10 / 5 = {dividir(10, 5)}")
   ```
 
+
+
 ### Parte 3: Criar o Dockerfile
 
 - [ ] **3.1** Criar o arquivo `Dockerfile` (sem extensão) na raiz do projeto
@@ -69,7 +71,7 @@ Criar uma imagem Docker baseada em Fedora, instalar Python, e executar programas
 
 - [ ] **3.3** Instalar o Python no container:
   ```dockerfile
-  RUN dnf install -y python3 && dnf clean all
+  RUN dnf install -y python3 python3-pip && dnf clean all
   ```
 
 - [ ] **3.4** Criar o diretório `/app` que será compartilhado:
@@ -87,6 +89,31 @@ Criar uma imagem Docker baseada em Fedora, instalar Python, e executar programas
   CMD ["python3"]
   ```
 
+- [ ] **3.7** Executar o terminal interativo do container e rodar os códigos Python manualmente:
+  ```bash
+  docker run --rm -it -v $(pwd):/app python-fedora-app bash
+  ```
+  Depois, dentro do terminal do container, execute:
+  ```bash
+  python3 /app/alomundo.py
+  python3 /app/calculadora.py
+
+- [ ] **3.8** Proposta prática: execute o terminal do container, rode o código `alomundo.py`, edite o arquivo e execute novamente para testar o mapeamento de volume:
+  ```bash
+  docker run --rm -it -v $(pwd):/app python-fedora-app bash
+  ```
+  Dentro do terminal do container, execute:
+  ```bash
+  python3 /app/alomundo.py
+  ```
+  Agora, no seu editor, altere o conteúdo do arquivo `alomundo.py` (por exemplo, troque a mensagem ou adicione uma linha). Salve o arquivo e, sem sair do terminal do container, execute novamente:
+  ```bash
+  python3 /app/alomundo.py
+  ```
+  Assim, você verifica que a alteração feita no arquivo do host é refletida imediatamente no container.
+  ```
+
+
 ### Parte 4: Construir e Executar o Container
 
 - [ ] **4.1** Construir a imagem Docker:
@@ -99,17 +126,18 @@ Criar uma imagem Docker baseada em Fedora, instalar Python, e executar programas
   docker images | grep python-fedora-app
   ```
 
-- [ ] **4.3** Executar o programa `alomundo.py` com mapeamento de volume:
+- [ ] **4.3** Executar o programa `alomundo.py`:
   ```bash
-  docker run --rm -v "$(pwd)":/app python-fedora-app python3 /app/alomundo.py
+  docker run --rm -v $(pwd):/app python-fedora-app python3 /app/alomundo.py
   ```
 
-- [ ] **4.4** Executar o programa `calculadora.py` com mapeamento de volume:
+- [ ] **4.4** Executar o programa `calculadora.py`:
   ```bash
-  docker run --rm -v "$(pwd)":/app python-fedora-app python3 /app/calculadora.py
+  docker run --rm -v $(pwd):/app python-fedora-app python3 /app/calculadora.py
   ```
 
 - [ ] **4.5** Testar o mapeamento de volume editando um dos arquivos Python e executando novamente
+
 
 ### Parte 5: Finalização
 
@@ -126,7 +154,19 @@ Criar uma imagem Docker baseada em Fedora, instalar Python, e executar programas
 
 - [ ] **5.3** Verificar no GitHub se todos os arquivos estão presentes
 
----
+
+### Parte 6: Relato do Aluno sobre a Atividade
+
+- [ ] **6.1** Criar o arquivo `relatorio.md` na raiz do projeto
+
+- [ ] **6.2** Adicionar a seção de Introdução
+  - Explique o contexto da atividade, o objetivo e a importância do uso de Docker com Python.
+
+- [ ] **6.3** Relatar as atividades realizadas
+  - Descreva os passos seguidos, comandos utilizados, dificuldades encontradas e como solucionou cada etapa.
+
+- [ ] **6.4** Considerações finais
+  - Comente sobre as principais dificuldades, aprendizados e sugestões para futuras atividades.
 
 ## 📝 Explicação dos Conceitos
 
@@ -144,11 +184,7 @@ Um Dockerfile é um arquivo de texto que contém instruções para construir uma
 - **CMD**: Define o comando padrão a ser executado
 
 ### Mapeamento de volumes (-v):
-O parâmetro `-v "$(pwd)":/app` mapeia o diretório atual da máquina host para o diretório `/app` dentro do container. Isso permite que:
-- Os arquivos Python permaneçam no host (não são copiados para a imagem)
-- Alterações feitas nos arquivos do host sejam refletidas no container em tempo real
-- Você possa editar o código sem precisar reconstruir a imagem Docker
-- O mesmo container possa executar diferentes versões dos arquivos
+O parâmetro `-v $(pwd):/app` mapeia o diretório atual da máquina host para o diretório `/app` dentro do container. Isso permite que alterações feitas nos arquivos do host sejam refletidas no container em tempo real.
 
 ### Parâmetro --rm:
 Remove automaticamente o container após sua execução, mantendo o sistema limpo.
